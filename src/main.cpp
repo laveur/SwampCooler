@@ -16,9 +16,10 @@ typedef enum CoolerMode_t {
 } CoolerMode;
 
 typedef enum PWMSpeed_t {
-    PWM_SPEED_LOW = 63,
-    PWM_SPEED_MED = 128,
-    PWM_SPEED_HIGH = 230
+    PWM_SPEED_LOW = 128,
+    PWM_SPEED_MED = 192,
+    PWM_SPEED_HIGH = 230,
+    PWM_SPEED_PUMP = PWM_SPEED_MED
 } PWMSpeed;
 
 // Global Variables
@@ -41,9 +42,9 @@ void setup() {
 }
 
 void loop() {
-    if (digitalRead(PIN_FLOAT) == HIGH) {
-        newMode = COOLER_MODE_OFF;
-    }
+    // if (digitalRead(PIN_FLOAT) == HIGH) {
+    //     newMode = COOLER_MODE_OFF;
+    // }
 
     if (newMode != currentMode) {
         switch(newMode) {
@@ -64,22 +65,22 @@ void loop() {
         currentMode = newMode;
     }
 
-    delay(10000);
+    delay(5000);
 }
 
 void shutdownCooler() {
-    digitalWrite(PIN_SHUTDOWN, HIGH);
+    digitalWrite(PIN_SHUTDOWN, LOW);
     analogWrite(PIN_FAN, 0);
     analogWrite(PIN_PUMP, 0);
     isShutdown = true;
 }
 
 void runCooler(PWMSpeed fanSpeed) {
-    analogWrite(PIN_PUMP, PWM_SPEED_HIGH);
+    analogWrite(PIN_PUMP, PWM_SPEED_PUMP);
     analogWrite(PIN_FAN, fanSpeed);
 
     if (isShutdown) {
-        digitalWrite(PIN_SHUTDOWN, LOW);
+        digitalWrite(PIN_SHUTDOWN, HIGH);
         isShutdown = false;
     }
 }
